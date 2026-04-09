@@ -186,11 +186,26 @@ if (
   });
 
   async function initGoogleSignIn() {
+    function renderFallbackGoogleButton(message) {
+      googleSignin.innerHTML = "";
+      const fallbackBtn = document.createElement("button");
+      fallbackBtn.type = "button";
+      fallbackBtn.className = "google-fallback-btn";
+      fallbackBtn.textContent = "Continue with Google";
+      fallbackBtn.addEventListener("click", () => {
+        setLoginError(message);
+      });
+      googleSignin.appendChild(fallbackBtn);
+    }
+
     try {
       const configRes = await fetch("/api/config");
       const config = await configRes.json();
       const clientId = config.googleClientId;
       if (!clientId || !window.google?.accounts?.id) {
+        renderFallbackGoogleButton(
+          "Google sign-in is not configured yet. Set GOOGLE_CLIENT_ID in Render environment variables."
+        );
         return;
       }
 
@@ -223,7 +238,7 @@ if (
         width: 320,
       });
     } catch (error) {
-      setLoginError("Google sign-in is currently unavailable.");
+      renderFallbackGoogleButton("Google sign-in is currently unavailable.");
     }
   }
 
