@@ -52,7 +52,7 @@ if (!newsList) {
     sourceLink.href = item.link;
     sourceLink.target = "_blank";
     sourceLink.rel = "noopener noreferrer";
-    sourceLink.textContent = "Original";
+    sourceLink.textContent = "Article";
 
     const details = document.createElement("p");
     details.className = "details hidden";

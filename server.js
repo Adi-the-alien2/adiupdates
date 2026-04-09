@@ -104,13 +104,13 @@ function createSubheading(item) {
   const sourcePart = item.title.includes(" - ")
     ? item.title.split(" - ").pop()
     : "Multiple sources";
-  return `What people are discussing now, via ${sourcePart}.`;
+  return `Key development update from ${sourcePart}, with the core context and next major detail to watch.`;
 }
 
 function paraphrase(text) {
   const base = text && text.length > 30 ? text : "Details are still emerging.";
-  const sentence = base.replace(/\s+/g, " ").trim().slice(0, 260);
-  return `This report highlights the key developments around the story and explains why it is drawing attention right now. ${sentence} As more verified updates are published, this overview should be read as a concise briefing rather than a final account.`;
+  const sentence = base.replace(/\s+/g, " ").trim().slice(0, 300);
+  return `Summary: ${sentence} This condensed brief focuses on the main facts, likely impact, and what to monitor as verified updates continue.`;
 }
 
 function sendJson(res, statusCode, payload) {
