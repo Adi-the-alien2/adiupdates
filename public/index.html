@@ -13,6 +13,28 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <section id="auth-overlay" class="auth-overlay">
+      <form id="login-form" class="auth-card">
+        <h2>Sign in required</h2>
+        <p>Sign in to view The Daily PandeyMonium.</p>
+        <label>
+          Username
+          <input id="login-username" name="username" type="text" autocomplete="username" required />
+        </label>
+        <label>
+          Password
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </label>
+        <p id="login-error" class="login-error hidden" aria-live="polite"></p>
+        <button type="submit" class="toggle-btn auth-submit">Sign in</button>
+      </form>
+    </section>
     <main>
       <section class="hero">
         <div class="container">
@@ -23,7 +45,10 @@
 
       <section class="feed-section">
         <div class="container feed-container">
-          <h2 class="feed-title">The Daily PandeyMonium</h2>
+          <div class="feed-header">
+            <h2 class="feed-title">The Daily PandeyMonium</h2>
+            <button id="logout-btn" type="button" class="logout-btn hidden">Sign out</button>
+          </div>
           <section id="news-list" class="news-list" aria-live="polite"></section>
         </div>
       </section>
