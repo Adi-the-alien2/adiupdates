@@ -97,7 +97,7 @@ function rewriteHeadline(headline) {
     .replace(/\b(Breaking|Latest|Update)\b/gi, "")
     .replace(/\s+/g, " ")
     .trim();
-  return cleaned ? `Quick Take: ${cleaned}` : "Quick Take: Top Story";
+  return cleaned || "Top Story";
 }
 
 function createSubheading(item) {
