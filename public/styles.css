@@ -1,0 +1,222 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-1: #0f172a;
+  --bg-2: #1e1b4b;
+  --bg-3: #172554;
+  --card: rgba(255, 255, 255, 0.88);
+  --card-border: rgba(255, 255, 255, 0.45);
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --accent-start: #7c3aed;
+  --accent-end: #2563eb;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  color: var(--text-main);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.28), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.35), transparent 42%),
+    linear-gradient(140deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.hero .container {
+  text-align: center;
+}
+
+.splash-title {
+  margin: 0;
+  font-size: clamp(3rem, 12vw, 8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  text-align: center;
+  text-shadow:
+    0 12px 34px rgba(2, 6, 23, 0.45),
+    0 0 24px rgba(129, 140, 248, 0.35);
+}
+
+.scroll-hint {
+  margin: 14px 0 0;
+  color: rgba(226, 232, 240, 0.9);
+  font-weight: 500;
+}
+
+.feed-section {
+  padding: 34px 0 72px;
+}
+
+.feed-container {
+  min-height: 40vh;
+}
+
+.feed-title {
+  margin: 0 0 16px;
+  color: #f8fafc;
+  font-size: clamp(1.4rem, 2.3vw, 2rem);
+  letter-spacing: -0.02em;
+}
+
+.news-list {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  box-shadow:
+    0 12px 30px rgba(2, 6, 23, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124, 58, 237, 0.38);
+  box-shadow:
+    0 16px 36px rgba(2, 6, 23, 0.24),
+    0 0 0 1px rgba(124, 58, 237, 0.08);
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 1.12rem;
+  line-height: 1.45;
+}
+
+.subheading {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toggle-btn {
+  border: 1px solid #222;
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+  color: #fff;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+.toggle-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.28);
+}
+
+.toggle-btn:active {
+  transform: translateY(0);
+}
+
+.details {
+  margin-top: 12px;
+  padding: 12px 0 0;
+  border-top: 1px dashed rgba(107, 114, 128, 0.35);
+  color: #1f2937;
+  line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-3px);
+  transition:
+    max-height 230ms ease,
+    opacity 180ms ease,
+    transform 180ms ease,
+    padding-top 180ms ease;
+}
+
+.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  border-top-color: transparent;
+}
+
+.details:not(.hidden) {
+  max-height: 240px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.source-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
+
+.status {
+  margin: 8px 0 0;
+  font-size: 0.98rem;
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.status.error {
+  color: #fecaca;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 24px 14px 40px;
+  }
+
+  .feed-section {
+    padding-top: 18px;
+  }
+
+  .card {
+    border-radius: 14px;
+    padding: 14px;
+  }
+}
