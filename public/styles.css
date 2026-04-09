@@ -161,6 +161,7 @@ body {
   border-top: 1px dashed rgba(107, 114, 128, 0.35);
   color: #1f2937;
   line-height: 1.6;
+  white-space: pre-line;
   max-height: 0;
   opacity: 0;
   overflow: hidden;
@@ -180,7 +181,7 @@ body {
 }
 
 .details:not(.hidden) {
-  max-height: 240px;
+  max-height: 420px;
   opacity: 1;
   transform: translateY(0);
 }

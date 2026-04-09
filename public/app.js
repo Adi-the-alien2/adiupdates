@@ -45,14 +45,7 @@ if (!newsList) {
     const toggleButton = document.createElement("button");
     toggleButton.className = "toggle-btn";
     toggleButton.type = "button";
-    toggleButton.textContent = "See more";
-
-    const sourceLink = document.createElement("a");
-    sourceLink.className = "source-link";
-    sourceLink.href = item.link;
-    sourceLink.target = "_blank";
-    sourceLink.rel = "noopener noreferrer";
-    sourceLink.textContent = "Article";
+    toggleButton.textContent = "Article";
 
     const details = document.createElement("p");
     details.className = "details hidden";
@@ -61,10 +54,10 @@ if (!newsList) {
     toggleButton.addEventListener("click", () => {
       const isHidden = details.classList.contains("hidden");
       details.classList.toggle("hidden");
-      toggleButton.textContent = isHidden ? "Hide" : "See more";
+      toggleButton.textContent = isHidden ? "Hide summary" : "Article";
     });
 
-    actions.append(toggleButton, sourceLink);
+    actions.append(toggleButton);
     card.append(meta, headline, subheading, actions, details);
 
     return card;

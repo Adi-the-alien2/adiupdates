@@ -109,8 +109,14 @@ function createSubheading(item) {
 
 function paraphrase(text) {
   const base = text && text.length > 30 ? text : "Details are still emerging.";
-  const sentence = base.replace(/\s+/g, " ").trim().slice(0, 300);
-  return `Summary: ${sentence} This condensed brief focuses on the main facts, likely impact, and what to monitor as verified updates continue.`;
+  const cleaned = base.replace(/\s+/g, " ").trim().slice(0, 520);
+  const sentenceParts = cleaned
+    .split(/(?<=[.!?])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const lead = sentenceParts[0] || cleaned;
+  const followup = sentenceParts.slice(1).join(" ") || "Additional details are still developing.";
+  return `This article focuses on the central development and the context behind it. ${lead}\n\nThe broader takeaway is how this update could evolve over the next cycle, with new reporting likely to add clarity. ${followup}`;
 }
 
 function sendJson(res, statusCode, payload) {
