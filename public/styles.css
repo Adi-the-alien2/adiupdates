@@ -225,7 +225,11 @@ body.locked {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: transparent;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(99, 102, 241, 0.38), transparent 48%),
+    radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.3), transparent 44%),
+    linear-gradient(140deg, rgba(15, 23, 42, 0.8), rgba(30, 27, 75, 0.78), rgba(23, 37, 84, 0.8));
+  backdrop-filter: blur(12px);
 }
 
 .auth-card {
@@ -278,6 +282,21 @@ body.locked {
 .auth-submit {
   width: 100%;
   justify-self: stretch;
+}
+
+.signup-btn {
+  width: 100%;
+  border: 1px solid rgba(99, 102, 241, 0.45);
+  background: rgba(99, 102, 241, 0.12);
+  color: #1e1b4b;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.signup-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
 }
 
 .google-signin {

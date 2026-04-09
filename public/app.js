@@ -5,6 +5,7 @@ const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
 const loginUserInput = document.getElementById("login-username");
 const googleSignin = document.getElementById("google-signin");
+const signupBtn = document.getElementById("signup-btn");
 
 if (
   !newsList ||
@@ -13,7 +14,8 @@ if (
   !loginError ||
   !logoutBtn ||
   !loginUserInput ||
-  !googleSignin
+  !googleSignin ||
+  !signupBtn
 ) {
   // Splash-only page requested.
   // Do nothing when the news container is intentionally removed.
@@ -160,6 +162,13 @@ if (
       onAuthSuccess();
     } catch (error) {
       setLoginError(error.message);
+    }
+  });
+
+  signupBtn.addEventListener("click", () => {
+    setLoginError("Sign up is via Google currently. Use the Google button below.");
+    if (window.google?.accounts?.id?.prompt) {
+      window.google.accounts.id.prompt();
     }
   });
 
