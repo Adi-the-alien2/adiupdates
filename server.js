@@ -2,7 +2,6 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { OAuth2Client } = require("google-auth-library");
 
 const PORT = process.env.PORT || 3000;
 const NEWS_RSS_URLS = [
@@ -20,11 +19,9 @@ const DEFAULT_NEWS_LIMIT = 100;
 const MAX_NEWS_LIMIT = 300;
 const AUTH_USER = process.env.AUTH_USER || "admin";
 const AUTH_PASS = process.env.AUTH_PASS || "changeme123";
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 const SESSION_COOKIE = "session_token";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
 const sessions = new Map();
-const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
 
 function cleanupExpiredSessions() {
   const now = Date.now();
@@ -307,7 +304,6 @@ async function handleLogin(req, res) {
     sendJson(res, 400, { error: error.message || "Login failed." });
   }
 }
-
 function startSession(res) {
   const token = crypto.randomBytes(24).toString("hex");
   const expiresAt = Date.now() + SESSION_TTL_MS;
@@ -315,44 +311,8 @@ function startSession(res) {
   setSessionCookie(res, token, expiresAt);
 }
 
-async function handleGoogleLogin(req, res) {
-  if (!googleClient || !GOOGLE_CLIENT_ID) {
-    sendJson(res, 503, { error: "Google sign-in is not configured." });
-    return;
-  }
-
-  try {
-    const payload = await readJsonBody(req);
-    const credential = String(payload.credential || "");
-    if (!credential) {
-      sendJson(res, 400, { error: "Missing Google credential token." });
-      return;
-    }
-
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: GOOGLE_CLIENT_ID,
-    });
-    const googlePayload = ticket.getPayload();
-    if (!googlePayload || !googlePayload.email_verified) {
-      sendJson(res, 401, { error: "Google account could not be verified." });
-      return;
-    }
-
-    startSession(res);
-    sendJson(res, 200, { ok: true });
-  } catch (error) {
-    sendJson(res, 401, { error: "Google sign-in failed." });
-  }
-}
-
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
-
-  if (req.method === "GET" && parsedUrl.pathname === "/api/config") {
-    sendJson(res, 200, { googleClientId: GOOGLE_CLIENT_ID || null });
-    return;
-  }
 
   if (req.method === "GET" && parsedUrl.pathname === "/api/session") {
     sendJson(res, 200, { authenticated: isAuthenticated(req) });
@@ -369,11 +329,6 @@ const server = http.createServer((req, res) => {
     if (token) sessions.delete(token);
     clearSessionCookie(res);
     sendJson(res, 200, { ok: true });
-    return;
-  }
-
-  if (req.method === "POST" && parsedUrl.pathname === "/api/login/google") {
-    handleGoogleLogin(req, res);
     return;
   }
 

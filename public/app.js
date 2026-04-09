@@ -4,8 +4,6 @@ const loginForm = document.getElementById("login-form");
 const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
 const loginUserInput = document.getElementById("login-username");
-const googleSignin = document.getElementById("google-signin");
-const signupBtn = document.getElementById("signup-btn");
 
 if (
   !newsList ||
@@ -13,9 +11,7 @@ if (
   !loginForm ||
   !loginError ||
   !logoutBtn ||
-  !loginUserInput ||
-  !googleSignin ||
-  !signupBtn
+  !loginUserInput
 ) {
   // Splash-only page requested.
   // Do nothing when the news container is intentionally removed.
@@ -165,13 +161,6 @@ if (
     }
   });
 
-  signupBtn.addEventListener("click", () => {
-    setLoginError("Sign up is via Google currently. Use the Google button below.");
-    if (window.google?.accounts?.id?.prompt) {
-      window.google.accounts.id.prompt();
-    }
-  });
-
   logoutBtn.addEventListener("click", async () => {
     await fetch("/api/logout", { method: "POST" });
     newsList.innerHTML = "";
@@ -184,63 +173,4 @@ if (
       loadNews();
     }
   });
-
-  async function initGoogleSignIn() {
-    function renderFallbackGoogleButton(message) {
-      googleSignin.innerHTML = "";
-      const fallbackBtn = document.createElement("button");
-      fallbackBtn.type = "button";
-      fallbackBtn.className = "google-fallback-btn";
-      fallbackBtn.textContent = "Continue with Google";
-      fallbackBtn.addEventListener("click", () => {
-        setLoginError(message);
-      });
-      googleSignin.appendChild(fallbackBtn);
-    }
-
-    try {
-      const configRes = await fetch("/api/config");
-      const config = await configRes.json();
-      const clientId = config.googleClientId;
-      if (!clientId || !window.google?.accounts?.id) {
-        renderFallbackGoogleButton(
-          "Google sign-in is not configured yet. Set GOOGLE_CLIENT_ID in Render environment variables."
-        );
-        return;
-      }
-
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: async (response) => {
-          try {
-            const loginRes = await fetch("/api/login/google", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ credential: response.credential }),
-            });
-            const data = await loginRes.json();
-            if (!loginRes.ok) {
-              throw new Error(data.error || "Google sign-in failed.");
-            }
-            setLoginError("");
-            onAuthSuccess();
-          } catch (error) {
-            setLoginError(error.message);
-          }
-        },
-      });
-
-      window.google.accounts.id.renderButton(googleSignin, {
-        theme: "outline",
-        size: "large",
-        shape: "pill",
-        text: "signin_with",
-        width: 320,
-      });
-    } catch (error) {
-      renderFallbackGoogleButton("Google sign-in is currently unavailable.");
-    }
-  }
-
-  initGoogleSignIn();
 }

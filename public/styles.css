@@ -284,40 +284,6 @@ body.locked {
   justify-self: stretch;
 }
 
-.signup-btn {
-  width: 100%;
-  border: 1px solid rgba(99, 102, 241, 0.45);
-  background: rgba(99, 102, 241, 0.12);
-  color: #1e1b4b;
-  padding: 9px 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.signup-btn:hover {
-  background: rgba(99, 102, 241, 0.2);
-}
-
-.google-signin {
-  display: grid;
-  justify-content: center;
-}
-
-.google-fallback-btn {
-  border: 1px solid #dadce0;
-  background: #fff;
-  color: #1f1f1f;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.google-fallback-btn:hover {
-  background: #f8f9fa;
-}
-
 .logout-btn {
   border: 1px solid rgba(226, 232, 240, 0.45);
   background: rgba(15, 23, 42, 0.38);
