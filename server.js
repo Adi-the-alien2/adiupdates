@@ -110,7 +110,7 @@ function createSubheading(item) {
 function paraphrase(text) {
   const base = text && text.length > 30 ? text : "Details are still emerging.";
   const sentence = base.replace(/\s+/g, " ").trim().slice(0, 260);
-  return `In short: ${sentence} This condensed version highlights the main development without the full article detail.`;
+  return `This report highlights the key developments around the story and explains why it is drawing attention right now. ${sentence} As more verified updates are published, this overview should be read as a concise briefing rather than a final account.`;
 }
 
 function sendJson(res, statusCode, payload) {
