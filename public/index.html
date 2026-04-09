@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <section id="auth-overlay" class="auth-overlay">
@@ -33,13 +34,13 @@
         </label>
         <p id="login-error" class="login-error hidden" aria-live="polite"></p>
         <button type="submit" class="toggle-btn auth-submit">Sign in</button>
+        <div id="google-signin" class="google-signin"></div>
       </form>
     </section>
     <main>
       <section class="hero">
         <div class="container">
           <h1 class="splash-title">The Daily PandeyMonium</h1>
-          <p class="scroll-hint">Scroll down for your news feed</p>
         </div>
       </section>
 

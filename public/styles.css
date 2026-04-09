@@ -225,8 +225,7 @@ body.locked {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(2, 6, 23, 0.76);
-  backdrop-filter: blur(6px);
+  background: transparent;
 }
 
 .auth-card {
@@ -279,6 +278,11 @@ body.locked {
 .auth-submit {
   width: 100%;
   justify-self: stretch;
+}
+
+.google-signin {
+  display: grid;
+  justify-content: center;
 }
 
 .logout-btn {

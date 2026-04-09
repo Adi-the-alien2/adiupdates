@@ -4,8 +4,17 @@ const loginForm = document.getElementById("login-form");
 const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
 const loginUserInput = document.getElementById("login-username");
+const googleSignin = document.getElementById("google-signin");
 
-if (!newsList || !authOverlay || !loginForm || !loginError || !logoutBtn || !loginUserInput) {
+if (
+  !newsList ||
+  !authOverlay ||
+  !loginForm ||
+  !loginError ||
+  !logoutBtn ||
+  !loginUserInput ||
+  !googleSignin
+) {
   // Splash-only page requested.
   // Do nothing when the news container is intentionally removed.
 } else {
@@ -28,6 +37,12 @@ if (!newsList || !authOverlay || !loginForm || !loginError || !logoutBtn || !log
 
     loginError.textContent = message;
     loginError.classList.remove("hidden");
+  }
+
+  function onAuthSuccess() {
+    setAuthUI(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    loadNews();
   }
 
   function formatPublished(dateString) {
@@ -142,8 +157,7 @@ if (!newsList || !authOverlay || !loginForm || !loginError || !logoutBtn || !log
         throw new Error(data.error || "Sign in failed.");
       }
       loginForm.reset();
-      setAuthUI(true);
-      loadNews();
+      onAuthSuccess();
     } catch (error) {
       setLoginError(error.message);
     }
@@ -161,4 +175,48 @@ if (!newsList || !authOverlay || !loginForm || !loginError || !logoutBtn || !log
       loadNews();
     }
   });
+
+  async function initGoogleSignIn() {
+    try {
+      const configRes = await fetch("/api/config");
+      const config = await configRes.json();
+      const clientId = config.googleClientId;
+      if (!clientId || !window.google?.accounts?.id) {
+        return;
+      }
+
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response) => {
+          try {
+            const loginRes = await fetch("/api/login/google", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ credential: response.credential }),
+            });
+            const data = await loginRes.json();
+            if (!loginRes.ok) {
+              throw new Error(data.error || "Google sign-in failed.");
+            }
+            setLoginError("");
+            onAuthSuccess();
+          } catch (error) {
+            setLoginError(error.message);
+          }
+        },
+      });
+
+      window.google.accounts.id.renderButton(googleSignin, {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        text: "signin_with",
+        width: 320,
+      });
+    } catch (error) {
+      setLoginError("Google sign-in is currently unavailable.");
+    }
+  }
+
+  initGoogleSignIn();
 }
