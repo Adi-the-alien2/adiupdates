@@ -1,7 +1,6 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
 const NEWS_RSS_URLS = [
@@ -17,86 +16,6 @@ const NEWS_RSS_URLS = [
 ];
 const DEFAULT_NEWS_LIMIT = 100;
 const MAX_NEWS_LIMIT = 300;
-const AUTH_USER = process.env.AUTH_USER || "admin";
-const AUTH_PASS = process.env.AUTH_PASS || "changeme123";
-const SESSION_COOKIE = "session_token";
-const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
-const sessions = new Map();
-
-function cleanupExpiredSessions() {
-  const now = Date.now();
-  for (const [token, expiresAt] of sessions.entries()) {
-    if (expiresAt <= now) {
-      sessions.delete(token);
-    }
-  }
-}
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-
-  cookieHeader.split(";").forEach((part) => {
-    const [rawKey, ...rawVal] = part.trim().split("=");
-    if (!rawKey) return;
-    cookies[rawKey] = decodeURIComponent(rawVal.join("=") || "");
-  });
-
-  return cookies;
-}
-
-function getSessionToken(req) {
-  const cookies = parseCookies(req.headers.cookie || "");
-  return cookies[SESSION_COOKIE] || "";
-}
-
-function isAuthenticated(req) {
-  cleanupExpiredSessions();
-  const token = getSessionToken(req);
-  const expiresAt = sessions.get(token);
-  if (!expiresAt) return false;
-  if (expiresAt <= Date.now()) {
-    sessions.delete(token);
-    return false;
-  }
-  return true;
-}
-
-function setSessionCookie(res, token, expiresAt) {
-  res.setHeader(
-    "Set-Cookie",
-    `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; Path=/; SameSite=Lax; Expires=${new Date(
-      expiresAt
-    ).toUTCString()}`
-  );
-}
-
-function clearSessionCookie(res) {
-  res.setHeader(
-    "Set-Cookie",
-    `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Expires=${new Date(0).toUTCString()}`
-  );
-}
-
-function readJsonBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk;
-      if (body.length > 1_000_000) {
-        reject(new Error("Payload too large"));
-      }
-    });
-    req.on("end", () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (error) {
-        reject(new Error("Invalid JSON payload"));
-      }
-    });
-    req.on("error", reject);
-  });
-}
 
 function stripHtml(input) {
   return input
@@ -287,56 +206,10 @@ async function handleNews(res, requestedLimit) {
   }
 }
 
-async function handleLogin(req, res) {
-  try {
-    const payload = await readJsonBody(req);
-    const username = String(payload.username || "").trim();
-    const password = String(payload.password || "");
-
-    if (username !== AUTH_USER || password !== AUTH_PASS) {
-      sendJson(res, 401, { error: "Invalid username or password." });
-      return;
-    }
-
-    startSession(res);
-    sendJson(res, 200, { ok: true });
-  } catch (error) {
-    sendJson(res, 400, { error: error.message || "Login failed." });
-  }
-}
-function startSession(res) {
-  const token = crypto.randomBytes(24).toString("hex");
-  const expiresAt = Date.now() + SESSION_TTL_MS;
-  sessions.set(token, expiresAt);
-  setSessionCookie(res, token, expiresAt);
-}
-
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
 
-  if (req.method === "GET" && parsedUrl.pathname === "/api/session") {
-    sendJson(res, 200, { authenticated: isAuthenticated(req) });
-    return;
-  }
-
-  if (req.method === "POST" && parsedUrl.pathname === "/api/login") {
-    handleLogin(req, res);
-    return;
-  }
-
-  if (req.method === "POST" && parsedUrl.pathname === "/api/logout") {
-    const token = getSessionToken(req);
-    if (token) sessions.delete(token);
-    clearSessionCookie(res);
-    sendJson(res, 200, { ok: true });
-    return;
-  }
-
   if (req.method === "GET" && parsedUrl.pathname === "/api/news") {
-    if (!isAuthenticated(req)) {
-      sendJson(res, 401, { error: "Please sign in first." });
-      return;
-    }
     const requestedLimit = Number.parseInt(
       parsedUrl.searchParams.get("limit") || "",
       10

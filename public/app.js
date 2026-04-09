@@ -1,48 +1,9 @@
 const newsList = document.getElementById("news-list");
-const authOverlay = document.getElementById("auth-overlay");
-const loginForm = document.getElementById("login-form");
-const loginError = document.getElementById("login-error");
-const logoutBtn = document.getElementById("logout-btn");
-const loginUserInput = document.getElementById("login-username");
 
-if (
-  !newsList ||
-  !authOverlay ||
-  !loginForm ||
-  !loginError ||
-  !logoutBtn ||
-  !loginUserInput
-) {
+if (!newsList) {
   // Splash-only page requested.
   // Do nothing when the news container is intentionally removed.
 } else {
-  function setAuthUI(isAuthenticated) {
-    authOverlay.classList.toggle("hidden", isAuthenticated);
-    logoutBtn.classList.toggle("hidden", !isAuthenticated);
-    document.body.classList.toggle("locked", !isAuthenticated);
-
-    if (!isAuthenticated) {
-      loginUserInput.focus();
-    }
-  }
-
-  function setLoginError(message) {
-    if (!message) {
-      loginError.textContent = "";
-      loginError.classList.add("hidden");
-      return;
-    }
-
-    loginError.textContent = message;
-    loginError.classList.remove("hidden");
-  }
-
-  function onAuthSuccess() {
-    setAuthUI(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    loadNews();
-  }
-
   function formatPublished(dateString) {
     if (!dateString) return "Latest update";
     const date = new Date(dateString);
@@ -119,58 +80,8 @@ if (
 
       renderNews(data.items);
     } catch (error) {
-      if (error.message.toLowerCase().includes("sign in")) {
-        setAuthUI(false);
-      }
       renderError(`Could not load news: ${error.message}`);
     }
   }
-
-  async function checkSession() {
-    try {
-      const response = await fetch("/api/session");
-      const data = await response.json();
-      return Boolean(response.ok && data.authenticated);
-    } catch (error) {
-      return false;
-    }
-  }
-
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    setLoginError("");
-
-    const formData = new FormData(loginForm);
-    const username = String(formData.get("username") || "").trim();
-    const password = String(formData.get("password") || "");
-
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Sign in failed.");
-      }
-      loginForm.reset();
-      onAuthSuccess();
-    } catch (error) {
-      setLoginError(error.message);
-    }
-  });
-
-  logoutBtn.addEventListener("click", async () => {
-    await fetch("/api/logout", { method: "POST" });
-    newsList.innerHTML = "";
-    setAuthUI(false);
-  });
-
-  checkSession().then((authenticated) => {
-    setAuthUI(authenticated);
-    if (authenticated) {
-      loadNews();
-    }
-  });
+  loadNews();
 }
